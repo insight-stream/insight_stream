@@ -49,17 +49,15 @@ embeddings = OpenAIEmbeddings(
 )
 
 llm = ChatOpenAI(
-    openai_api_key=CHAT_MODEL_API_KEY,
-    model=CHAT_MODEL_NAME,
-    temperature=0,
-    openai_api_base=CHAT_MODEL_URL,
+	openai_api_key=CHAT_MODEL_API_KEY,
+	model=CHAT_MODEL_NAME,
+	temperature=0,
+	openai_api_base=CHAT_MODEL_URL,
 	request_timeout=300,
-    max_retries=3,
-	model_kwargs={
-		"max_tokens": 600,
-		"repetition_penalty": 3.0,
-		"frequency_penalty": 2.0,
-	}
+	max_retries=3,
+	frequency_penalty=0.0,
+	max_tokens=1000,
+	presence_penalty=1.0,
 )
 
 clientQdrant=QdrantClient(url=QDRANT_URL, api_key=QDRANT_KEY)
@@ -216,7 +214,6 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
 	
 	print(f"Файл {os.path.basename(path)} загружен в квадрант, index_id {index_id}")
 
-	#загрузка файла на сервер
 	url = _load_file_to_server(path)
 	
 	return docs
