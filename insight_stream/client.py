@@ -125,10 +125,9 @@ def _add_documents(
     chain_kw = prompt_kw | llm | StrOutputParser()
     chain_qa = prompt_qa | llm | StrOutputParser()
 
-    logger.info(f"Processing {len(documents)} documents")
     for idx, doc in enumerate(documents):
         name = os.path.basename(file_path)
-        logger.info(f"Processing document: {idx} ({name})")
+        logger.info(f"Processing document: {index_id} ({name})")
         print(f"Processing document: {idx} ({name})")
 
         logger.info("Generating keywords")
@@ -218,6 +217,8 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
     # загрузка чанков документа в квадрант
     for chunk in final_chunks:
         try:
+            logger.info(f"Adding chunk {index_id} / {len(final_chunks)} to InsightStream")
+            print(f"Adding chunk {index_id} / {len(final_chunks)} to InsightStream")
             docs = _add_documents(index_id, [chunk], path)
         except Exception as err:
             logger.error(f"Error in adding document {index_id} to Qdrant: {err}")
