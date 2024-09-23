@@ -35,7 +35,7 @@ SERVER_NAME = os.getenv("SERVER_NAME")
 TOKEN = os.getenv("TOKEN")
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=os.getenv("LOG_LEVEL", logging.INFO))
 logger = logging.getLogger(__name__)
 
 
