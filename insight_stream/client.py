@@ -95,7 +95,7 @@ def _add_documents(
             ),
         )
     except Exception as e:
-        logger.debug(f"Error in creating collection {index_id}: {e}")
+        logger.info(f"Error in creating collection {index_id}: {e}")
         pass
 
     qdrant = Qdrant(
@@ -133,7 +133,7 @@ def _add_documents(
         logger.info("Generating keywords")
         print("Generating keywords...")
         keywords = chain_kw.invoke({"chunk": doc.page_content})
-        logger.debug(f"Keywords: {keywords}")
+        logger.info(f"Keywords: {keywords}")
 
         logger.info("Generating questions")
         print("Generating questions...")
@@ -143,7 +143,7 @@ def _add_documents(
                 "name": os.path.splitext(os.path.basename(file_path))[0],
             }
         )
-        logger.debug(f"Questions: {questions}")
+        logger.info(f"Questions: {questions}")
 
         new_doc = Document(
             page_content=keywords.replace('"', "") + "\n" + questions,
