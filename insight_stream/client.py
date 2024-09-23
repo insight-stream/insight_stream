@@ -125,6 +125,7 @@ def _add_documents(
     chain_kw = prompt_kw | llm | StrOutputParser()
     chain_qa = prompt_qa | llm | StrOutputParser()
 
+    logger.info(f"Processing {len(documents)} documents")
     for idx, doc in enumerate(documents):
         name = os.path.basename(file_path)
         logger.info(f"Processing document: {idx} ({name})")
