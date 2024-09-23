@@ -190,6 +190,7 @@ def delete_documents(index_id: str, documents: List[Document]):
 def upload_doc(index_id: str, path: str) -> List[Document]:
     """Загрузка документов в индекс квадранта и на сервер"""
 
+    name = os.path.basename(path)
     elements = partition(path)
     chunks = chunk_by_title(elements)
 
@@ -215,10 +216,9 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
         final_chunks.append(doc)
 
     # загрузка чанков документа в квадрант
-    for chunk in final_chunks:
+    for chunk_id, chunk in enumerate(final_chunks):
         try:
-            logger.info(f"Adding chunk {index_id} / {len(final_chunks)} to InsightStream")
-            print(f"Adding chunk {index_id} / {len(final_chunks)} to InsightStream")
+            print(f"Adding chunk {chunk_id} / {len(final_chunks)} for {name} to InsightStream")
             docs = _add_documents(index_id, [chunk], path)
         except Exception as err:
             logger.error(f"Error in adding document {index_id} to Qdrant: {err}")
@@ -236,9 +236,10 @@ def upload_dir(index_id: str, path: str) -> List[Document]:
 
     docs = []
 
-    for file in os.listdir(path):
+    for file_id, file in enumerate(os.listdir(path)):
         file_path = os.path.join(path, file)
         if os.path.isfile(file_path):
+            print(f"Uploading file {file_id} / {len(os.listdir(path))} {os.path.basename(file_path)}")
             chunks = upload_doc(index_id, file_path)
             docs.extend(chunks)
 
