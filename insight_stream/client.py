@@ -126,14 +126,17 @@ def _add_documents(
     chain_qa = prompt_qa | llm | StrOutputParser()
 
     for idx, doc in enumerate(documents):
-        print(f"Processing document: {idx}")
-        logger.info(f"Processing document: {idx}")
+        name = os.path.basename(file_path)
+        logger.info(f"Processing document: {idx} ({name})")
+        print(f"Processing document: {idx} ({name})")
 
         logger.info("Generating keywords")
+        print("Generating keywords...")
         keywords = chain_kw.invoke({"chunk": doc.page_content})
         logger.debug(f"Keywords: {keywords}")
 
         logger.info("Generating questions")
+        print("Generating questions...")
         questions = chain_qa.invoke(
             {
                 "chunk": doc.page_content,
@@ -202,14 +205,12 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
         if len(cur_text + text) <= 10000:
             cur_text += "\n" + text if cur_text else text
         else:
-            print(len(cur_text))
             doc = Document(page_content=cur_text)
             final_chunks.append(doc)
             l += 1
             cur_text = text
 
     if cur_text:
-        print(len(cur_text))
         doc = Document(page_content=cur_text)
         final_chunks.append(doc)
 
@@ -221,7 +222,7 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
             logger.error(f"Error in adding document {index_id} to Qdrant: {err}")
             docs = _add_documents(index_id, [chunk], path)
 
-    print(f"Файл {os.path.basename(path)} загружен в квадрант, index_id {index_id}")
+    logger.info(f"Файл {os.path.basename(path)} загружен в квадрант, index_id {index_id}")
 
     url = _load_file_to_server(path)
 
@@ -266,7 +267,7 @@ def _load_file_to_server(file_path: str) -> str:
     """Добавление файла на сервера"""
 
     if not _check_server_availability():
-        print("Сервер для загрузки документов недоступен")
+        logger.error("Сервер для загрузки документов недоступен")
         return ""
 
     url = f"{SERVER_NAME}/documents/{os.path.basename(file_path)}"
@@ -278,10 +279,10 @@ def _load_file_to_server(file_path: str) -> str:
     response = requests.put(url, headers=headers, files=files)
 
     if response.status_code == 201:
-        print(f"Успешно загружен файл {os.path.basename(file_path)} на сервер!")
+        logger.info(f"Успешно загружен файл {os.path.basename(file_path)} на сервер!")
         return file_url
     else:
-        print(f"Загрузка файла {os.path.basename(file_path)} на сервер не удалась")
+        logger.error(f"Загрузка файла {os.path.basename(file_path)} на сервер не удалась")
         return ""
 
 
@@ -289,13 +290,13 @@ def _del_file_from_server(url: str):
     """Удаление файла с сервера"""
 
     if not _check_server_availability():
-        print("Сервер недоступен")
+        logger.error("Сервер недоступен")
         return ""
 
     headers = {"Authorization": f"Bearer {TOKEN}"}
     response = requests.delete(url, headers=headers)
 
     if response.status_code == 204:
-        print(f"Успешно удален файл {url}!")
+        logger.info(f"Успешно удален файл {url}!")
     else:
-        print("Ошибка при удалении")
+        logger.error(f"Ошибка при удалении файла {url}")
