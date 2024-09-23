@@ -55,9 +55,9 @@ llm = ChatOpenAI(
     openai_api_base=CHAT_MODEL_URL,
     request_timeout=300,
     max_retries=3,
-    frequency_penalty=0.0,
+    frequency_penalty=3.0,
     max_tokens=1000,
-    presence_penalty=1.0,
+    presence_penalty=3.0,
 )
 
 clientQdrant = QdrantClient(url=QDRANT_URL, api_key=QDRANT_KEY)
