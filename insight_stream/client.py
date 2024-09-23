@@ -126,6 +126,7 @@ def _add_documents(
     chain_qa = prompt_qa | llm | StrOutputParser()
 
     for idx, doc in enumerate(documents):
+        print(f"Processing document: {idx}")
         logger.info(f"Processing document: {idx}")
 
         logger.info("Generating keywords")
