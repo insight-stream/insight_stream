@@ -218,13 +218,17 @@ def upload_doc(index_id: str, path: str) -> List[Document]:
     # загрузка чанков документа в квадрант
     for chunk_id, chunk in enumerate(final_chunks):
         try:
-            print(f"Adding chunk {chunk_id} / {len(final_chunks)} for {name} to InsightStream")
+            print(
+                f"Adding chunk {chunk_id + 1} / {len(final_chunks)} for {name} to InsightStream"
+            )
             docs = _add_documents(index_id, [chunk], path)
         except Exception as err:
             logger.error(f"Error in adding document {index_id} to Qdrant: {err}")
             docs = _add_documents(index_id, [chunk], path)
 
-    logger.info(f"Файл {os.path.basename(path)} загружен в квадрант, index_id {index_id}")
+    logger.info(
+        f"Файл {os.path.basename(path)} загружен в квадрант, index_id {index_id}"
+    )
 
     url = _load_file_to_server(path)
 
@@ -239,7 +243,9 @@ def upload_dir(index_id: str, path: str) -> List[Document]:
     for file_id, file in enumerate(os.listdir(path)):
         file_path = os.path.join(path, file)
         if os.path.isfile(file_path):
-            print(f"Uploading file {file_id} / {len(os.listdir(path))} {os.path.basename(file_path)}")
+            print(
+                f"Uploading file {file_id + 1} / {len(os.listdir(path))} {os.path.basename(file_path)}"
+            )
             chunks = upload_doc(index_id, file_path)
             docs.extend(chunks)
 
@@ -285,7 +291,9 @@ def _load_file_to_server(file_path: str) -> str:
         logger.info(f"Успешно загружен файл {os.path.basename(file_path)} на сервер!")
         return file_url
     else:
-        logger.error(f"Загрузка файла {os.path.basename(file_path)} на сервер не удалась")
+        logger.error(
+            f"Загрузка файла {os.path.basename(file_path)} на сервер не удалась"
+        )
         return ""
 
 
